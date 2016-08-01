@@ -35,9 +35,16 @@ class mainWindow:
 		self.cbutton.grid(row=10, column=3, sticky = W + E)
 		self.bbutton= Button(root, text="Browse", command=self.browsecsv)
 		self.bbutton.grid(row=1, column=3)
-		self.abutton=Button(root, text="Save to CSV", command=lambda:self.writeCSV(self.process_csv,labels))
+		self.abutton=Button(root, text="Save to CSV", command=lambda:self.writeCSV(self.getnewfilename(),self.process_csv,labels))
 		self.abutton.grid(row=10,column=4)
+		self.entry1=Entry(root,text=".csv")
+		self.entry1.grid(row=9,column=4)
 
+	def getnewfilename(self):
+		name=self.entry1.get()
+		print(name)
+		return name
+		
 	def browsecsv(self):
 			from tkFileDialog import askopenfilename
 
@@ -66,20 +73,24 @@ class mainWindow:
 				CenozCount=0
 				for row in reader:
 					totalanalyses+=1
-					if float(row[header[0]])>=EndArchaean:
-						ArchaeanCount+=1
-					elif float(row[header[0]])<=EndArchaean and float(row[header[0]])>=EndPalaeoprot:
-						PalaeopCount+=1
-					elif float(row[header[0]])<=EndPalaeoprot and float(row[header[0]])>=EndMesoprot:
-						MesopCount+=1
-					elif float(row[header[0]])<=EndMesoprot and float(row[header[0]])>=EndNeoprot:
-						NeopCount+=1
-					elif float(row[header[0]])<=EndNeoprot and float(row[header[0]])>=EndPalaeoz:
-						PalaeozCount+=1
-					elif float(row[header[0]])<=EndPalaeoz and float(row[header[0]])>=EndMesoz:
-						MesozCount+=1
+					holder=round(float(row[header[0]]),0)
+					if any([holder==EndArchaean,holder==EndPalaeoprot,holder==EndMesoprot,holder==EndNeoprot,holder==EndPalaeoz,holder==EndMesoz]):
+						print("Contains analyses that are exactly equivalent to the ages of chronostratigraphic boundaries!")
 					else:
-						CenozCount+=1
+						if float(row[header[0]])>EndArchaean:
+							ArchaeanCount+=1
+						elif float(row[header[0]])<EndArchaean and float(row[header[0]])>EndPalaeoprot:
+							PalaeopCount+=1
+						elif float(row[header[0]])<EndPalaeoprot and float(row[header[0]])>EndMesoprot:
+							MesopCount+=1
+						elif float(row[header[0]])<EndMesoprot and float(row[header[0]])>EndNeoprot:
+							NeopCount+=1
+						elif float(row[header[0]])<EndNeoprot and float(row[header[0]])>EndPalaeoz:
+							PalaeozCount+=1
+						elif float(row[header[0]])<EndPalaeoz and float(row[header[0]])>EndMesoz:
+							MesozCount+=1
+						else:
+							CenozCount+=1
 
 			def percent(part,whole):
 				percentage=round((float(part)/float(whole)*100),2)
@@ -119,12 +130,12 @@ class mainWindow:
 				labelfunc(Archpercent,Palaeoppercent,Mesoppercent,Neoppercent,Palaeozpercent,Mesozpercent,Cenozpercent)
 				return dictpercent
 				
-	def writeCSV(self,fndata,labels2):
+	def writeCSV(self,newfilename,fndata,labels2):
 		data = fndata(labels2)
 		print(data.items())
 		print(type(data))
 		if self.filename:
-			with open('some.csv','wb') as csvfile:
+			with open(newfilename,'wb') as csvfile:
 				data = fndata(labels2)
 				w = csv.DictWriter(csvfile, data.keys())
 				w.writeheader()
