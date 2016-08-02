@@ -15,10 +15,10 @@ from collections import *
         # self.value=self.e.get()
         # self.top.destroy()
 
-class mainWindow:       
-	def __init__(self, master):     
+class mainWindow:
+	def __init__(self, master):
 		self.filename=""
-		
+
 		def labels (Arch=0,Palaeop=0,Mesop=0,Neop=0,Palaeoz=0,Mesoz=0,Cenoz=0):
 			lblArch=Label(root, text="Percentage Archaean Ages: "+str(Arch)+"%").grid(row=1, column=2)
 			lblPalaeop=Label(root, text="Percentage Palaeoproterozoic Ages: "+str(Palaeop)+"%").grid(row=2, column=2)
@@ -29,8 +29,8 @@ class mainWindow:
 			lblCenoz=Label(root, text="Percentage Cenozoic Ages: "+str(Cenoz)+"%").grid(row=7, column=2)
 
 		labels()
-		
-		#Buttons  
+
+		#Buttons
 		self.cbutton= Button(root, text="OK", command=lambda:self.process_csv(labels))
 		self.cbutton.grid(row=10, column=3, sticky = W + E)
 		self.bbutton= Button(root, text="Browse", command=self.browsecsv)
@@ -42,15 +42,14 @@ class mainWindow:
 
 	def getnewfilename(self):
 		name=self.entry1.get()
-		print(name)
 		return name
-		
+
 	def browsecsv(self):
 			from tkFileDialog import askopenfilename
 
-			Tk().withdraw() 
+			Tk().withdraw()
 			self.filename = askopenfilename()
-	
+
 	def process_csv(self,labelfunc):
 		if self.filename:
 			totalanalyses=0
@@ -95,7 +94,7 @@ class mainWindow:
 			def percent(part,whole):
 				percentage=round((float(part)/float(whole)*100),2)
 				return percentage
-			
+
 			Archpercent=0
 			Palaeoppercent=0
 			Mesoppercent=0
@@ -111,7 +110,7 @@ class mainWindow:
 			Palaeozpercent = percent(PalaeozCount,totalanalyses)
 			Mesozpercent = percent(MesozCount,totalanalyses)
 			Cenozpercent = percent(CenozCount,totalanalyses)
-			
+
 			dictpercent = OrderedDict([
 					("Archaean",Archpercent),
 					("Palaeoproterozoic",Palaeoppercent),
@@ -121,15 +120,15 @@ class mainWindow:
 					("Mesozoic",Mesozpercent),
 					("Cenozoic",Cenozpercent)
 			])
-			
+
 			Totalpercent = Archpercent+Palaeoppercent+Mesoppercent+Neoppercent+Palaeozpercent+Mesozpercent+Cenozpercent
-			
+
 			if round(Totalpercent,0)!=100:
 				print("Not 100 percent")
 			else:
 				labelfunc(Archpercent,Palaeoppercent,Mesoppercent,Neoppercent,Palaeozpercent,Mesozpercent,Cenozpercent)
 				return dictpercent
-				
+
 	def writeCSV(self,newfilename,fndata,labels2):
 		data = fndata(labels2)
 		print(data.items())
@@ -140,7 +139,7 @@ class mainWindow:
 				w = csv.DictWriter(csvfile, data.keys())
 				w.writeheader()
 				w.writerow(data)
-	
+
 
 root = Tk()
 window=mainWindow(root)
